@@ -39,6 +39,7 @@ dependencies:
   email_validator: ^2.1.17
   getwidget: ^3.0.1
   fluttertoast: ^8.2.1
+  provider: ^6.0.5
 
 dev_dependencies:
   flutter_test:

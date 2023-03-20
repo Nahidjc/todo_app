@@ -56,111 +56,106 @@ class _LoginPageState extends State<LoginPage> {
           fontSize: 16.0);
     }
   }
+
   @override
   Widget build(BuildContext context) {
-    return isLoading
-        ? const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
-          )
-        : Scaffold(
-            appBar: AppBar(
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const ToDoTable()),
-                    );
-                  },
-                  child: const Text(
-                    'Todo',
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-            body: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    const Text(
-                      'Login',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _emailText,
-                      style: const TextStyle(fontSize: 20),
-                      decoration: const InputDecoration(
-                          labelText: 'Email',
-                          border: OutlineInputBorder(),
-                          labelStyle: TextStyle(fontSize: 20),
-                          prefixIcon: Icon(Icons.email)),
-                    ),
-                    const SizedBox(height: 18),
-                    TextFormField(
-                      controller: _passwordText,
-                      obscureText: true,
-                      style: const TextStyle(fontSize: 20),
-                      decoration: const InputDecoration(
-                          labelText: 'Password',
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.lock),
-                          labelStyle: TextStyle(fontSize: 20)),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(top: 30.0),
-                      height: 50,
-                      decoration: const BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(15)),
-                      ),
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.all(10),
-                          //internal content margin
-                        ),
-                        onPressed: () {
-                          var email = _emailText.text;
-                          var password = _passwordText.text;
-                          login(email, password);
-                        },
-                        child:
-                            const Text('Login', style: TextStyle(fontSize: 20)),
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text("Already have an account?",
-                            style: TextStyle(fontSize: 16)),
-                        TextButton(
-                            onPressed: () {
-
-                            },
-                            child: const Text("Sign Up",
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold)))
-                      ],
-                    )
-                  ],
-                ),
+    return Scaffold(
+      appBar: AppBar(
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ToDoTable()),
+              );
+            },
+            child: const Text(
+              'Todo',
+              style: TextStyle(
+                fontSize: 20,
+                color: Colors.white,
               ),
             ),
-          );
+          ),
+        ],
+      ),
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              const Text(
+                'Login',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _emailText,
+                style: const TextStyle(fontSize: 20),
+                decoration: const InputDecoration(
+                    labelText: 'Email',
+                    border: OutlineInputBorder(),
+                    labelStyle: TextStyle(fontSize: 20),
+                    prefixIcon: Icon(Icons.email)),
+              ),
+              const SizedBox(height: 18),
+              TextFormField(
+                controller: _passwordText,
+                obscureText: true,
+                style: const TextStyle(fontSize: 20),
+                decoration: const InputDecoration(
+                    labelText: 'Password',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.lock),
+                    labelStyle: TextStyle(fontSize: 20)),
+              ),
+              Container(
+                margin: const EdgeInsets.only(top: 20.0),
+                height: 50,
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(15)),
+                ),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.all(10),
+                    //internal content margin
+                  ),
+                  onPressed: () {
+                    var email = _emailText.text;
+                    var password = _passwordText.text;
+                    login(email, password);
+                  },
+                  child: Center(
+                      child: isLoading
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text('Login',
+                              style: TextStyle(fontSize: 20))),
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text("Already have an account?",
+                      style: TextStyle(fontSize: 16)),
+                  TextButton(
+                      onPressed: () {},
+                      child: const Text("Sign Up",
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold)))
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

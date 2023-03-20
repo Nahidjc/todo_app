@@ -5,8 +5,13 @@ class Todo {
   final String task;
   final DateTime dueDate;
   bool isCompleted;
+  bool isPublic;
 
-  Todo({required this.task, required this.dueDate, this.isCompleted = false});
+  Todo(
+      {required this.task,
+      required this.dueDate,
+      this.isCompleted = false,
+      this.isPublic = true});
 }
 
 class ToDoTable extends StatefulWidget {
@@ -16,23 +21,29 @@ class ToDoTable extends StatefulWidget {
 }
 
 class _ToDoTableState extends State<ToDoTable> {
-  final List<Todo> todos = [
+  late List<Todo> todos = [
     Todo(
         task: 'Buy groceries',
         dueDate: DateTime.now().add(const Duration(days: 0)),
-        isCompleted: true),
+        isCompleted: true,
+        isPublic: true),
     Todo(
         task: 'Pay bills',
         dueDate: DateTime.now().add(const Duration(days: 7)),
-        isCompleted: true),
+        isCompleted: true,
+        isPublic: false),
     Todo(
         task: 'Clean house',
         dueDate: DateTime.now().add(const Duration(days: 1)),
-        isCompleted: true),
+        isCompleted: false,
+        isPublic: true),
   ];
+  
+  late List<Todo> publicTodos =
+      todos.where((todo) => todo.isPublic == true).toList();
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return Scaffold(
       appBar: AppBar(
         title: const Text('TODO Table'),
         actions: <Widget>[
@@ -61,9 +72,19 @@ class _ToDoTableState extends State<ToDoTable> {
             DataColumn(label: Text('Due Date')),
             DataColumn(label: Text('Status')),
           ],
-          rows: todos.map((todo) {
+          rows: publicTodos.map((todo) {
             return DataRow(cells: [
-              DataCell(Text(todo.task)),
+              DataCell(
+                Text(todo.task,
+                    style: todo.isCompleted
+                        ? const TextStyle(
+                            decoration: TextDecoration.lineThrough,
+                            decorationThickness: 2.0,
+                            decorationColor: Color.fromARGB(255, 243, 42, 27),
+                            color: Color.fromARGB(255, 13, 13, 13),
+                          )
+                        : const TextStyle()),
+              ),
               DataCell(Text(todo.dueDate.toLocal().toString().split(' ')[0])),
               DataCell(Checkbox(
                   value: todo.isCompleted,
