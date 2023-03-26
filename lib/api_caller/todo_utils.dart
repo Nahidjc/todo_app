@@ -16,7 +16,7 @@ class TodoUtils {
         TodoModel todoModel = TodoModel.fromJson(element);
         todosData.add(todoModel);
       });
-      return rawTodos;
+      return todosData;
     } catch (e) {
       throw Exception('Error');
     }
