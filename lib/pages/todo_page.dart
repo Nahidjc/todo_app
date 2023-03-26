@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:rnd_flutter_app/api_caller/todo_utils.dart';
+import 'package:provider/provider.dart';
 import 'package:rnd_flutter_app/pages/login_page.dart';
+import 'package:rnd_flutter_app/provider/todo_provider.dart';
 
 class Todo {
   final String task;
@@ -44,6 +45,8 @@ class _ToDoTableState extends State<ToDoTable> {
       todos.where((todo) => todo.isPublic == true).toList();
   @override
   Widget build(BuildContext context) {
+    final todoProvider = Provider.of<TodoProvider>(context);
+    print(todoProvider.openTodos.length);
     return Scaffold(
       appBar: AppBar(
         title: const Text('TODO Table'),
@@ -113,8 +116,8 @@ class _ToDoTableState extends State<ToDoTable> {
       )),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          TodoUtils todoUtils = TodoUtils();
-          todoUtils.getTodos();
+          // TodoUtils todoUtils = TodoUtils();
+          // todoUtils.getTodos();
         },
         child: const Icon(Icons.add),
       ),

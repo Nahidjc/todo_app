@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:rnd_flutter_app/api_caller/todo_utils.dart';
 import 'package:rnd_flutter_app/model/todos_model.dart';
+import 'package:rnd_flutter_app/utils/todo_response.dart';
 
 class TodoProvider extends ChangeNotifier {
-  // Map<String, dynamic> allTodo = {};
-  // Map<String, dynamic> get todo => allTodo;
-  late List<TodoModel> _todos = [];
+  TodoUtils todoUtils = TodoUtils();
 
-  List<TodoModel> get todos => _todos;
-
+  List<TodoModel> _openTodos = [];
+  List<TodoModel> get openTodos => _openTodos;
   void getTodo() async {
     try {
-      TodoUtils todoUtils = TodoUtils();
-      // _todos = await todoUtils.getTodos();
+      TodoResponse todosResponse = await todoUtils.getTodos();
+      print('todosResponse.todos');
+      print(todosResponse.todos);
+      _openTodos = todosResponse.todos;
       notifyListeners();
     } catch (e) {
       throw e;
