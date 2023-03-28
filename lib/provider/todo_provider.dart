@@ -1,23 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:rnd_flutter_app/api_caller/todo_utils.dart';
 import 'package:rnd_flutter_app/model/todos_model.dart';
-import 'package:rnd_flutter_app/utils/todo_response.dart';
 
 class TodoProvider extends ChangeNotifier {
-  TodoUtils todoUtils = TodoUtils();
-
-  List<TodoModel> _openTodos = [];
+  late List<TodoModel> _openTodos = [];
   List<TodoModel> get openTodos => _openTodos;
+  bool isLoading = false;
   void getTodo() async {
     try {
-      TodoResponse todosResponse = await todoUtils.getTodos();
-      print('todosResponse.todos');
-      print(todosResponse.todos);
-      _openTodos = todosResponse.todos;
-      notifyListeners();
+      isLoading = true;
+      TodoUtils todoUtils = TodoUtils();
+      _openTodos = await todoUtils.getTodos();
+      isLoading = false;
     } catch (e) {
-      throw e;
+      isLoading = false;
     }
+    notifyListeners();
   }
 
   // void addTodoList(TodoModel todo) {
