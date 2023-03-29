@@ -1,19 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:rnd_flutter_app/api_caller/todo_utils.dart';
+import 'package:provider/provider.dart';
+import 'package:rnd_flutter_app/model/todos_model.dart';
 import 'package:rnd_flutter_app/pages/login_page.dart';
-
-class Todo {
-  final String task;
-  final DateTime dueDate;
-  bool isCompleted;
-  bool isPublic;
-
-  Todo(
-      {required this.task,
-      required this.dueDate,
-      this.isCompleted = false,
-      this.isPublic = true});
-}
+import 'package:rnd_flutter_app/provider/todo_provider.dart';
 
 class ToDoTable extends StatefulWidget {
   const ToDoTable({super.key});
@@ -22,28 +11,18 @@ class ToDoTable extends StatefulWidget {
 }
 
 class _ToDoTableState extends State<ToDoTable> {
-  late List<Todo> todos = [
-    Todo(
-        task: 'Buy groceries',
-        dueDate: DateTime.now().add(const Duration(days: 0)),
-        isCompleted: true,
-        isPublic: true),
-    Todo(
-        task: 'Pay bills',
-        dueDate: DateTime.now().add(const Duration(days: 7)),
-        isCompleted: true,
-        isPublic: false),
-    Todo(
-        task: 'Clean house',
-        dueDate: DateTime.now().add(const Duration(days: 1)),
-        isCompleted: false,
-        isPublic: true),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    context.read<TodoProvider>().getTodo();
+  }
 
-  late List<Todo> publicTodos =
-      todos.where((todo) => todo.isPublic == true).toList();
   @override
   Widget build(BuildContext context) {
+    final todoProvider = Provider.of<TodoProvider>(context);
+    final List<TodoModel> pubTodos =
+        todoProvider.openTodos.where((todo) => todo.isPublic == true).toList();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('TODO Table'),
@@ -66,55 +45,56 @@ class _ToDoTableState extends State<ToDoTable> {
         ],
       ),
       body: SafeArea(
-          child: Column(
-        children: [
-          Expanded(
-              child: Container(
-            width: double.infinity,
-            decoration:
-                const BoxDecoration(color: Color.fromARGB(255, 253, 253, 253)),
-            child: SingleChildScrollView(
-              // scrollDirection: Axis.horizontal,
-              child: DataTable(
-                columns: const [
-                  DataColumn(label: Text('Task')),
-                  DataColumn(label: Text('Due Date')),
-                  DataColumn(label: Text('Status')),
-                ],
-                rows: publicTodos.map((todo) {
-                  return DataRow(cells: [
-                    DataCell(
-                      Text(todo.task,
-                          style: todo.isCompleted
-                              ? const TextStyle(
-                                  decoration: TextDecoration.lineThrough,
-                                  decorationThickness: 2.0,
-                                  decorationColor:
-                                      Color.fromARGB(255, 243, 42, 27),
-                                  color: Color.fromARGB(255, 13, 13, 13),
-                                )
-                              : const TextStyle()),
-                    ),
-                    DataCell(
-                        Text(todo.dueDate.toLocal().toString().split(' ')[0])),
-                    DataCell(Checkbox(
-                        value: todo.isCompleted,
+          child: todoProvider.isLoading
+              ? const Center(
+                  child: CircularProgressIndicator(
+                      color: Color.fromARGB(255, 0, 162, 255)))
+              : DataTable(
+                  columns: const [
+                    DataColumn(label: Text('Task')),
+                    DataColumn(label: Text('Deadline')),
+                    DataColumn(label: Text('Done')),
+                  ],
+                  rows: pubTodos.map((element) {
+                    return DataRow(cells: <DataCell>[
+                      DataCell(
+                        Text(element.todo.toString().substring(0, 10),
+                            style: element.isCompleted == true
+                                ? const TextStyle(
+                                    decoration: TextDecoration.lineThrough,
+                                    decorationThickness: 2.0,
+                                    decorationColor:
+                                        Color.fromARGB(255, 243, 42, 27),
+                                    color: Color.fromARGB(255, 13, 13, 13),
+                                  )
+                                : const TextStyle()),
+                      ),
+                      DataCell(
+                        Text(element.containsKey("dueDate")
+                            ? element.dueDate.toString()
+                            : DateTime.now().toString()),
+                      ),
+                      DataCell(Checkbox(
+                        value: element.isCompleted,
                         onChanged: (value) {
-                          setState(() {
-                            todo.isCompleted = value!;
-                          });
-                        })),
-                  ]);
-                }).toList(),
-              ),
-            ),
-          ))
-        ],
-      )),
+                          // todoProvider.toggleDone(todo);
+                        },
+                      )),
+                    ]);
+                  }).toList(),
+                )),
+
+      // body: SafeArea(
+      //     child: ListView.builder(
+      //         itemCount: pubTodos.length,
+      //         itemBuilder: (context, itemIndex) {
+      //           return ListTile(
+      //             leading: Text(pubTodos[itemIndex].todo.toString()),
+      //           );
+      //         })),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          TodoUtils todoUtils = TodoUtils();
-          todoUtils.getTodos();
+          todoProvider.getTodo();
         },
         child: const Icon(Icons.add),
       ),

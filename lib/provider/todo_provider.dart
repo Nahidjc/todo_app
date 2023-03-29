@@ -3,20 +3,19 @@ import 'package:rnd_flutter_app/api_caller/todo_utils.dart';
 import 'package:rnd_flutter_app/model/todos_model.dart';
 
 class TodoProvider extends ChangeNotifier {
-  // Map<String, dynamic> allTodo = {};
-  // Map<String, dynamic> get todo => allTodo;
-  late List<TodoModel> _todos = [];
-
-  List<TodoModel> get todos => _todos;
-
+  late List<TodoModel> _openTodos = [];
+  List<TodoModel> get openTodos => _openTodos;
+  bool isLoading = false;
   void getTodo() async {
     try {
+      isLoading = true;
       TodoUtils todoUtils = TodoUtils();
-      // _todos = await todoUtils.getTodos();
-      notifyListeners();
+      _openTodos = await todoUtils.getTodos();
+      isLoading = false;
     } catch (e) {
-      throw e;
+      isLoading = false;
     }
+    notifyListeners();
   }
 
   // void addTodoList(TodoModel todo) {

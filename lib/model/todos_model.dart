@@ -1,28 +1,49 @@
+import 'dart:convert';
+
+List<TodoModel> todoFromJson(String str) =>
+    List<TodoModel>.from(json.decode(str).map((x) => TodoModel.fromJson(x)));
+
+String todoToJson(List<TodoModel> data) =>
+    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+
 class TodoModel {
-  String? sId;
+  String? id;
   String? author;
   String? todo;
+  String? dueDate;
   bool? isPublic;
   bool? isCompleted;
 
   TodoModel(
-      {this.sId, this.author, this.todo, this.isPublic, this.isCompleted});
+      {this.id,
+      this.author,
+      this.todo,
+      this.dueDate,
+      this.isPublic,
+      this.isCompleted});
 
-  TodoModel.fromJson(Map<String, dynamic> json) {
-    sId = json['_id'];
-    author = json['author'];
-    todo = json['todo'];
-    isPublic = json['isPublic'];
-    isCompleted = json['isCompleted'];
-  }
+  factory TodoModel.fromJson(Map<String, dynamic> json) => TodoModel(
+      id: json['_id'],
+      author: json['author'],
+      todo: json['todo'],
+      dueDate: json['dueDate'],
+      isPublic: json['isPublic'],
+      isCompleted: json['isCompleted']);
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['_id'] = sId;
-    data['author'] = author;
-    data['todo'] = todo;
-    data['isPublic'] = isPublic;
-    data['isCompleted'] = isCompleted;
-    return data;
+  Map<String, dynamic> toJson() => {
+        '_id': id,
+        'author': author,
+        'todo': todo,
+        'dueDate': dueDate,
+        'isPublic': isPublic,
+        'isCompleted': isCompleted
+      };
+  bool containsKey(String key) {
+    switch (key) {
+      case 'dueDate':
+        return dueDate != null;
+      default:
+        return false;
+    }
   }
 }
