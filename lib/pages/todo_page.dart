@@ -34,28 +34,22 @@ class _ToDoTableState extends State<ToDoTable> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('TODO Table'),
+        automaticallyImplyLeading: false,
         actions: <Widget>[
           authProvider.isAuthenticate
               ? IconButton(
                   icon: const Icon(Icons.logout),
                   onPressed: () => authProvider.logout(),
                 )
-              : TextButton(
+              : IconButton(
+                  icon: const Icon(Icons.login),
                   onPressed: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) => const LoginPage()),
                     );
-                  },
-                  child: const Text(
-                    'Login',
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
+                  }),
         ],
       ),
       body: SafeArea(
