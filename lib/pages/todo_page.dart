@@ -22,8 +22,14 @@ class _ToDoTableState extends State<ToDoTable> {
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
     final todoProvider = Provider.of<TodoProvider>(context);
-    final List<TodoModel> pubTodos =
-        todoProvider.openTodos.where((todo) => todo.isPublic == true).toList();
+    List<TodoModel> pubTodos = [];
+    if (authProvider.isAuthenticate) {
+      pubTodos = todoProvider.openTodos;
+    } else {
+      pubTodos = todoProvider.openTodos
+          .where((todo) => todo.isPublic == true)
+          .toList();
+    }
 
     return Scaffold(
       appBar: AppBar(
