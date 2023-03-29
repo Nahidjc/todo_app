@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+// import 'package:http/http.dart' as http;
+// import 'dart:convert';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:rnd_flutter_app/pages/todo_page.dart';
-
+import 'package:rnd_flutter_app/provider/login_provider.dart';
+import 'package:provider/provider.dart';
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
   @override
@@ -11,40 +12,64 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  //  @override
+  // void initState() {
+  //   super.initState();
+  //   context.read<AuthProvider>().getTodo();
+  // }
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailText = TextEditingController();
   final TextEditingController _passwordText = TextEditingController();
-  bool isLoading = false;
+  // bool isLoading = false;
   login(String email, password) async {
     try {
       _emailText.clear();
       _passwordText.clear();
-      setState(() {
-        isLoading = true;
-      });
-      var response = await http
-          .post(
-            Uri.parse(
-                'https://e-commerce-service-node.onrender.com/user/login'),
-            headers: <String, String>{
-              'Content-Type': 'application/json; charset=UTF-8',
-            },
-            body: jsonEncode(
-                <String, String>{'email': email, 'password': password}),
-          )
-          .then((value) => value.body);
-      var data = jsonDecode(response);
-      setState(() {
-        isLoading = false;
-      });
-      if (data['statusCode'] == 200) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const ToDoTable()),
+      // setState(() {
+      //   isLoading = true;
+      // });
+      // var response = await http
+      //     .post(
+      //       Uri.parse(
+      //           'https://e-commerce-service-node.onrender.com/user/login'),
+      //       headers: <String, String>{
+      //         'Content-Type': 'application/json; charset=UTF-8',
+      //       },
+      //       body: jsonEncode(
+      //           <String, String>{'email': email, 'password': password}),
+      //     )
+      //     .then((value) => value.body);
+      // var data = jsonDecode(response);
+      Provider.of<AuthProvider>(context, listen: false)
+          .loginProvider(email, password)
+          .catchError((error) {
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('An error occurred'),
+            content: Text(error.toString()),
+            actions: [
+              TextButton(
+                child: const Text('OK'),
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                },
+              ),
+            ],
+          ),
         );
-      } else {
-        throw data["message"];
-      }
+      });
+      // setState(() {
+      //   isLoading = false;
+      // });
+      // if (data['statusCode'] == 200) {
+      //   Navigator.push(
+      //     context,
+      //     MaterialPageRoute(builder: (context) => const ToDoTable()),
+      //   );
+      // } else {
+      //   throw data["message"];
+      // }
     } catch (e) {
       Fluttertoast.showToast(
           msg: e.toString(),
@@ -59,6 +84,10 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    if (authProvider.isAuthenticate) {
+      return const ToDoTable();
+    }
     return Scaffold(
       appBar: AppBar(
         actions: <Widget>[
@@ -134,7 +163,7 @@ class _LoginPageState extends State<LoginPage> {
                     login(email, password);
                   },
                   child: Center(
-                      child: isLoading
+                      child: authProvider.isLoading
                           ? const CircularProgressIndicator(color: Colors.white)
                           : const Text('Login',
                               style: TextStyle(fontSize: 20))),
