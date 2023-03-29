@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rnd_flutter_app/model/todos_model.dart';
 import 'package:rnd_flutter_app/pages/login_page.dart';
+import 'package:rnd_flutter_app/provider/login_provider.dart';
 import 'package:rnd_flutter_app/provider/todo_provider.dart';
 
 class ToDoTable extends StatefulWidget {
@@ -19,6 +20,7 @@ class _ToDoTableState extends State<ToDoTable> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
     final todoProvider = Provider.of<TodoProvider>(context);
     final List<TodoModel> pubTodos =
         todoProvider.openTodos.where((todo) => todo.isPublic == true).toList();
@@ -27,21 +29,27 @@ class _ToDoTableState extends State<ToDoTable> {
       appBar: AppBar(
         title: const Text('TODO Table'),
         actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const LoginPage()),
-              );
-            },
-            child: const Text(
-              'Login',
-              style: TextStyle(
-                fontSize: 20,
-                color: Colors.white,
-              ),
-            ),
-          ),
+          authProvider.isAuthenticate
+              ? IconButton(
+                  icon: const Icon(Icons.logout),
+                  onPressed: () => authProvider.logout(),
+                )
+              : TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const LoginPage()),
+                    );
+                  },
+                  child: const Text(
+                    'Login',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
         ],
       ),
       body: SafeArea(
@@ -58,7 +66,7 @@ class _ToDoTableState extends State<ToDoTable> {
                   rows: pubTodos.map((element) {
                     return DataRow(cells: <DataCell>[
                       DataCell(
-                        Text(element.todo.toString().substring(0, 10),
+                        Text(element.todo.toString(),
                             style: element.isCompleted == true
                                 ? const TextStyle(
                                     decoration: TextDecoration.lineThrough,
@@ -83,15 +91,6 @@ class _ToDoTableState extends State<ToDoTable> {
                     ]);
                   }).toList(),
                 )),
-
-      // body: SafeArea(
-      //     child: ListView.builder(
-      //         itemCount: pubTodos.length,
-      //         itemBuilder: (context, itemIndex) {
-      //           return ListTile(
-      //             leading: Text(pubTodos[itemIndex].todo.toString()),
-      //           );
-      //         })),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           todoProvider.getTodo();
