@@ -40,6 +40,8 @@ dependencies:
   getwidget: ^3.0.1
   fluttertoast: ^8.2.1
   provider: ^6.0.5
+  datetime_picker_formfield: ^2.0.1
+  intl: ^0.18.0
 
 dev_dependencies:
   flutter_test:

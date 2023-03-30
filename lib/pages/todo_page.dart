@@ -4,6 +4,7 @@ import 'package:rnd_flutter_app/model/todos_model.dart';
 import 'package:rnd_flutter_app/pages/login_page.dart';
 import 'package:rnd_flutter_app/provider/login_provider.dart';
 import 'package:rnd_flutter_app/provider/todo_provider.dart';
+import 'package:intl/intl.dart';
 
 class ToDoTable extends StatefulWidget {
   const ToDoTable({super.key});
@@ -12,6 +13,97 @@ class ToDoTable extends StatefulWidget {
 }
 
 class _ToDoTableState extends State<ToDoTable> {
+  final formKey = GlobalKey<FormState>();
+  bool isPublic = true;
+  final TextEditingController dateinput = TextEditingController();
+
+  Future<void> showTodoFormDialog(BuildContext context) async {
+    return await showDialog(
+        context: context,
+        builder: (context) {
+          return StatefulBuilder(builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Create Todo'),
+              content: SingleChildScrollView(
+                child: Form(
+                  key: formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      TextFormField(
+                        keyboardType: TextInputType.multiline,
+                        maxLines: 2,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Todo',
+                          hintText: 'Enter todo name',
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: dateinput,
+                        decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            icon: Icon(Icons.calendar_today),
+                            labelText: "Enter Deadline"),
+                        readOnly: true,
+                        onTap: () async {
+                          DateTime? pickedDate = await showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime(2000),
+                              lastDate: DateTime(2100));
+                          if (pickedDate != null) {
+                            String formattedDate =
+                                DateFormat('yyyy-MM-dd').format(pickedDate);
+                            setState(() {
+                              dateinput.text =
+                                  formattedDate; //set output date to TextField value.
+                            });
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Checkbox(
+                            value: isPublic,
+                            onChanged: (checked) {
+                              setState(() {
+                                if (checked != null) {
+                                  isPublic = checked;
+                                }
+                              });
+                            },
+                          ),
+                          const Text('Public todo'),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    // if (_formKey.currentState.validate()) {
+                    //   _formKey.currentState.save();
+                    //   Navigator.of(context).pop();
+                    // }
+                  },
+                  child: const Text('Add Todo'),
+                ),
+              ],
+            );
+          });
+        });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -41,8 +133,9 @@ class _ToDoTableState extends State<ToDoTable> {
                   icon: const Icon(Icons.logout),
                   onPressed: () => authProvider.logout(),
                 )
-              : IconButton(
-                  icon: const Icon(Icons.login),
+              : TextButton(
+                  child: const Text('Login',
+                      style: TextStyle(fontSize: 20, color: Colors.white)),
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -92,9 +185,8 @@ class _ToDoTableState extends State<ToDoTable> {
                   }).toList(),
                 )),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          todoProvider.getTodo();
-        },
+        onPressed: () => showTodoFormDialog(context),
+        tooltip: 'Create Todo',
         child: const Icon(Icons.add),
       ),
     );
