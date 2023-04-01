@@ -16,6 +16,7 @@ class _ToDoTableState extends State<ToDoTable> {
   final formKey = GlobalKey<FormState>();
   bool isPublic = true;
   final TextEditingController dateinput = TextEditingController();
+  final TextEditingController todoinput = TextEditingController();
 
   Future<void> showTodoFormDialog(BuildContext context) async {
     return await showDialog(
@@ -33,6 +34,7 @@ class _ToDoTableState extends State<ToDoTable> {
                     children: <Widget>[
                       TextFormField(
                         keyboardType: TextInputType.multiline,
+                        controller: todoinput,
                         maxLines: 2,
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
@@ -91,10 +93,7 @@ class _ToDoTableState extends State<ToDoTable> {
                 ),
                 TextButton(
                   onPressed: () {
-                    // if (_formKey.currentState.validate()) {
-                    //   _formKey.currentState.save();
-                    //   Navigator.of(context).pop();
-                    // }
+                    Navigator.of(context).pop();
                   },
                   child: const Text('Add Todo'),
                 ),
@@ -185,7 +184,10 @@ class _ToDoTableState extends State<ToDoTable> {
                   }).toList(),
                 )),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => showTodoFormDialog(context),
+        onPressed: () =>
+            authProvider.isAuthenticate ? showTodoFormDialog(context) : null,
+        backgroundColor:
+            authProvider.isAuthenticate ? Colors.blue : Colors.grey,
         tooltip: 'Create Todo',
         child: const Icon(Icons.add),
       ),

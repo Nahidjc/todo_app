@@ -26,21 +26,6 @@ class _LoginPageState extends State<LoginPage> {
     try {
       _emailText.clear();
       _passwordText.clear();
-      // setState(() {
-      //   isLoading = true;
-      // });
-      // var response = await http
-      //     .post(
-      //       Uri.parse(
-      //           'https://e-commerce-service-node.onrender.com/user/login'),
-      //       headers: <String, String>{
-      //         'Content-Type': 'application/json; charset=UTF-8',
-      //       },
-      //       body: jsonEncode(
-      //           <String, String>{'email': email, 'password': password}),
-      //     )
-      //     .then((value) => value.body);
-      // var data = jsonDecode(response);
       Provider.of<AuthProvider>(context, listen: false)
           .loginProvider(email, password)
           .catchError((error) {
@@ -60,17 +45,6 @@ class _LoginPageState extends State<LoginPage> {
           ),
         );
       });
-      // setState(() {
-      //   isLoading = false;
-      // });
-      // if (data['statusCode'] == 200) {
-      //   Navigator.push(
-      //     context,
-      //     MaterialPageRoute(builder: (context) => const ToDoTable()),
-      //   );
-      // } else {
-      //   throw data["message"];
-      // }
     } catch (e) {
       Fluttertoast.showToast(
           msg: e.toString(),
