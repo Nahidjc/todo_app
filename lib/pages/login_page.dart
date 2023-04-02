@@ -21,7 +21,6 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailText = TextEditingController();
   final TextEditingController _passwordText = TextEditingController();
-  // bool isLoading = false;
   login(String email, password) async {
     try {
       _emailText.clear();

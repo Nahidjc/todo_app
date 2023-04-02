@@ -22,4 +22,25 @@ class TodoUtils {
       throw Exception('Error');
     }
   }
+
+  Future<TodoModel> createTodo(
+      username, todoText, dateData, isPublic, isCompleted) async {
+    final response = await http.post(
+        Uri.parse("https://e-commerce-service-node.onrender.com/todo/add"),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          "todo": todoText,
+          "author": username,
+          "dueDate": dateData,
+          "isPublic": isPublic,
+          "isCompleted": isCompleted
+        }));
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> todoMap = json.decode(response.body);
+      final todo = TodoModel.fromJson(todoMap['todo']);
+      return todo;
+    } else {
+      throw Exception('Failed to create todo');
+    }
+  }
 }

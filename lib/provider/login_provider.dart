@@ -6,6 +6,8 @@ import 'package:rnd_flutter_app/model/user_model.dart';
 class AuthProvider extends ChangeNotifier {
   String _token = '';
   String get token => _token;
+  String _username = '';
+  String get username => _username;
   bool _loading = false;
   bool get isLoading => _loading;
   bool _isAuthenticate = false;
@@ -40,6 +42,7 @@ class AuthProvider extends ChangeNotifier {
         setAuthenticate(true);
         final userData = UserModel.fromJson(json.decode(response.body));
         _token = userData.accessToken;
+        _username = userData.user.userName;
       }
 
       notifyListeners();

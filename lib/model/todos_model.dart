@@ -30,14 +30,15 @@ class TodoModel {
       isPublic: json['isPublic'],
       isCompleted: json['isCompleted']);
 
-  Map<String, dynamic> toJson() => {
-        '_id': id,
+  Map<String, dynamic> toJson() {
+    return {
         'author': author,
         'todo': todo,
         'dueDate': dueDate,
         'isPublic': isPublic,
-        'isCompleted': isCompleted
-      };
+      'isCompleted': isCompleted
+    };
+  }
   bool containsKey(String key) {
     switch (key) {
       case 'dueDate':
