@@ -6,10 +6,10 @@ class TodoProvider extends ChangeNotifier {
   late List<TodoModel> _openTodos = [];
   List<TodoModel> get openTodos => _openTodos;
   bool isLoading = false;
+  TodoUtils todoUtils = TodoUtils();
   void getTodo() async {
     try {
       isLoading = true;
-      TodoUtils todoUtils = TodoUtils();
       _openTodos = await todoUtils.getTodos();
       isLoading = false;
     } catch (e) {
@@ -18,10 +18,20 @@ class TodoProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // void addTodoList(TodoModel todo) {
-  //   _todoList.add(todo);
-  //   notifyListeners();
-  // }
+  Future<void> createTodo(
+      username, todoText, dateData, isPublic, isCompleted) async {
+    try {
+      isLoading = true;
+
+      await todoUtils.createTodo(
+          username, todoText, dateData, isPublic, isCompleted);
+      getTodo();
+      isLoading = false;
+    } catch (e) {
+      isLoading = false;
+    }
+    notifyListeners();
+  }
 
   // void removeTodoList(TodoModel todo) {
   //   final index = _todoList.indexOf(todo);

@@ -13,11 +13,32 @@ class ToDoTable extends StatefulWidget {
 }
 
 class _ToDoTableState extends State<ToDoTable> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<TodoProvider>().getTodo();
+    context.read<AuthProvider>().token;
+  }
+
   final formKey = GlobalKey<FormState>();
   bool isPublic = true;
   final TextEditingController dateinput = TextEditingController();
+  final TextEditingController todoinput = TextEditingController();
+  createTodo(username, todoText, dateData, isPublic) async {
+    bool isCompleted = false;
+    try {
+      Provider.of<TodoProvider>(context, listen: false)
+          .createTodo(username, todoText, dateData, isPublic, isCompleted);
+      // Provider.of<TodoProvider>(context, listen: false).getTodo();
+    } catch (e) {
+      throw Exception('Failed to create todo');
+    }
 
-  Future<void> showTodoFormDialog(BuildContext context) async {
+    // Provider.of<TodoProvider>(context, listen: false)
+    //     .createTodo(TodoModel.toJson());
+  }
+
+  Future<void> showTodoFormDialog(BuildContext context, authProvider) async {
     return await showDialog(
         context: context,
         builder: (context) {
@@ -33,6 +54,7 @@ class _ToDoTableState extends State<ToDoTable> {
                     children: <Widget>[
                       TextFormField(
                         keyboardType: TextInputType.multiline,
+                        controller: todoinput,
                         maxLines: 2,
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
@@ -86,15 +108,16 @@ class _ToDoTableState extends State<ToDoTable> {
               ),
               actions: <Widget>[
                 TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
                   child: const Text('Cancel'),
                 ),
                 TextButton(
                   onPressed: () {
-                    // if (_formKey.currentState.validate()) {
-                    //   _formKey.currentState.save();
-                    //   Navigator.of(context).pop();
-                    // }
+                    createTodo(authProvider.username, todoinput.text,
+                        dateinput.text, isPublic);
+                    Navigator.of(context).pop();
                   },
                   child: const Text('Add Todo'),
                 ),
@@ -102,12 +125,6 @@ class _ToDoTableState extends State<ToDoTable> {
             );
           });
         });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    context.read<TodoProvider>().getTodo();
   }
 
   @override
@@ -150,11 +167,12 @@ class _ToDoTableState extends State<ToDoTable> {
               ? const Center(
                   child: CircularProgressIndicator(
                       color: Color.fromARGB(255, 0, 162, 255)))
-              : DataTable(
+              : SingleChildScrollView(
+                  child: DataTable(
                   columns: const [
                     DataColumn(label: Text('Task')),
                     DataColumn(label: Text('Deadline')),
-                    DataColumn(label: Text('Done')),
+                    DataColumn(label: Text('Edit')),
                   ],
                   rows: pubTodos.map((element) {
                     return DataRow(cells: <DataCell>[
@@ -175,17 +193,21 @@ class _ToDoTableState extends State<ToDoTable> {
                             ? element.dueDate.toString()
                             : DateTime.now().toString()),
                       ),
-                      DataCell(Checkbox(
-                        value: element.isCompleted,
-                        onChanged: (value) {
-                          // todoProvider.toggleDone(todo);
+                      DataCell(IconButton(
+                        icon: const Icon(Icons.edit),
+                        onPressed: () {
+                          // Handle edit button press
                         },
                       )),
                     ]);
                   }).toList(),
-                )),
+                ))),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => showTodoFormDialog(context),
+        onPressed: () => authProvider.isAuthenticate
+            ? showTodoFormDialog(context, authProvider)
+            : null,
+        backgroundColor:
+            authProvider.isAuthenticate ? Colors.blue : Colors.grey,
         tooltip: 'Create Todo',
         child: const Icon(Icons.add),
       ),
